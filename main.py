@@ -166,8 +166,16 @@ if not os.path.exists(path_to_graphs):
 
 with Spinner("Creating and saving the daily cases plot... "):
     p1 = ggplot(cases, aes(x="Specimen date", y="Daily lab-confirmed cases", group = 1)) + geom_point() + geom_line() + labs(title = "Daily COVID-19 Cases") + scale_x_date(date_breaks = "3 days") + stat_smooth(method='mavg', method_args={'window': 3}, color='cyan', show_legend=True) + stat_smooth(method='mavg', method_args={'window': 7}, color='blue') + theme(axis_text_x=element_text(rotation=45, hjust=1))
-    p1.save(filename=('cases_' + str(date_today)),path=path_to_graphs,height=5, width=15, units = 'in', dpi=1000, verbose = False)
+    p1.save(filename=('cases_daily_' + str(date_today)),path=path_to_graphs,height=5, width=20, units = 'in', dpi=1000, verbose = False)
 
 with Spinner("Creating and saving the daily change in deaths plot... "):
-    p2 = ggplot(deaths, aes(x="Reporting date", y="Daily change in deaths", group = 1)) + geom_point() + geom_line() + labs(title = "Daily change in deaths") + scale_x_date(date_breaks = "3 days") + stat_smooth(method='mavg', method_args={'window': 3}, color='cyan') + stat_smooth(method='mavg', method_args={'window': 7}, color='blue') + theme(axis_text_x=element_text(rotation=45, hjust=1))
-    p2.save(filename = ('death_change_' + str(date_today)),path=path_to_graphs,height=5, width=15, units = 'in', dpi=1000, verbose = False)
+    p2 = ggplot(deaths, aes(x="Reporting date", y="Daily change in deaths", group = 1)) + geom_point() + geom_line() + labs(title = "Daily Change in Deaths") + scale_x_date(date_breaks = "3 days") + stat_smooth(method='mavg', method_args={'window': 3}, color='cyan') + stat_smooth(method='mavg', method_args={'window': 7}, color='blue') + theme(axis_text_x=element_text(rotation=45, hjust=1))
+    p2.save(filename = ('deaths_change_daily_' + str(date_today)),path=path_to_graphs,height=5, width=20, units = 'in', dpi=1000, verbose = False)
+
+with Spinner("Creating and saving the cumulative cases plot... "):
+    p3 = ggplot(cases, aes(x="Specimen date", y="Cumulative lab-confirmed cases", group = 1)) + geom_point() + geom_line() + labs(title = "Cumulative Cases") + scale_x_date(date_breaks = "3 days") + theme(axis_text_x=element_text(rotation=45, hjust=1))
+    p3.save(filename = ('cumulative_cases_' + str(date_today)),path=path_to_graphs,height=5, width=20, units = 'in', dpi=1000, verbose = False)
+
+with Spinner("Creating and saving the cumulative deaths plot... "):
+    p4 = ggplot(deaths, aes(x="Reporting date", y="Cumulative deaths", group = 1)) + geom_point() + geom_line() + labs(title = "Cumulative Deaths") + scale_x_date(date_breaks = "3 days") + theme(axis_text_x=element_text(rotation=45, hjust=1))
+    p4.save(filename = ('cumulative_deaths_' + str(date_today)),path=path_to_graphs,height=5, width=20, units = 'in', dpi=1000, verbose = False)
