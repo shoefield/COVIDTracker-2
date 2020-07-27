@@ -11,11 +11,5 @@ python3 -u main.py
 ```
 
 # Prerequisites
-The following packages are required for this script to run:
-
-- Pandas
-- Numpy
-- Requests
-- Plotnine (ggplot)
-
+Please see requirements.txt located in this repository.
 These should be installed using ``` pip3 ``` or another Python package manager.
