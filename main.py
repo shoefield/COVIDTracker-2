@@ -7,7 +7,6 @@ from datetime import datetime
 from plotnine import *
 from yaspin import yaspin
 import time
-import webbrowser
 
 # VARIABLES AND INITIALISATION
 error_count = 0
@@ -96,12 +95,6 @@ date_today = datetime.now().strftime('%d-%m-%Y')
 cwd = os.path.dirname(os.path.realpath(__file__))
 path_2 = Path("graphs/")
 path_to_graphs = cwd / path_2
-
-file_name_list = []
-file_name_list.append(str(path_to_graphs) + ('/cases_daily_' + str(date_today)))
-file_name_list.append(str(path_to_graphs) + ('/deaths_change_daily_' + str(date_today)))
-file_name_list.append(str(path_to_graphs) + ('/cumulative_cases_' + str(date_today)))
-file_name_list.append(str(path_to_graphs) + ('/cumulative_deaths_' + str(date_today)))
 
 with yaspin(text=" Checking if 'graphs' folder is present...", color="yellow") as spinner:
     time.sleep(1)
