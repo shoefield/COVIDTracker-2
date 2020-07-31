@@ -7,13 +7,15 @@ from datetime import datetime
 from plotnine import *
 from yaspin import yaspin
 import time
+import webbrowser
 
 # VARIABLES AND INITIALISATION
+error_count = 0
 url_cases = 'https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv'
 url_deaths = 'https://coronavirus.data.gov.uk/downloads/csv/coronavirus-deaths_latest.csv'
 
-
 def getStats():
+    global error_count
     cwd = os.path.dirname(os.path.realpath(__file__))
     path = Path("stats/")
     path_to_stats = cwd / path
@@ -35,6 +37,7 @@ def getStats():
                 f.write(response.content)
         except Exception:
             spinner.fail("✘")
+            error_count += 1
         else:
             spinner.ok("✔")
 
@@ -46,6 +49,7 @@ def getStats():
                 f.write(response.content)
         except Exception:
             spinner.fail("✘")
+            error_count += 1
         else:
             spinner.ok("✔")
 
@@ -79,7 +83,6 @@ def csv_parser():
     # Return data from function
     return cases_sorted, deaths_sorted
 
-
 # First, get latest stats using getStats()
 getStats()
 
@@ -94,6 +97,12 @@ cwd = os.path.dirname(os.path.realpath(__file__))
 path_2 = Path("graphs/")
 path_to_graphs = cwd / path_2
 
+file_name_list = []
+file_name_list.append(str(path_to_graphs) + ('/cases_daily_' + str(date_today)))
+file_name_list.append(str(path_to_graphs) + ('/deaths_change_daily_' + str(date_today)))
+file_name_list.append(str(path_to_graphs) + ('/cumulative_cases_' + str(date_today)))
+file_name_list.append(str(path_to_graphs) + ('/cumulative_deaths_' + str(date_today)))
+
 with yaspin(text=" Checking if 'graphs' folder is present...", color="yellow") as spinner:
     time.sleep(1)
     if not os.path.exists(path_to_graphs):
@@ -106,33 +115,42 @@ with yaspin(text=" Checking if 'graphs' folder is present...", color="yellow") a
 with yaspin(text=" Creating and saving the daily cases plot...", color="yellow") as spinner:
     try:
         p1 = ggplot(cases, aes(x="Specimen date", y="Daily lab-confirmed cases", group = 1)) + geom_point() + geom_line() + labs(title = "Daily COVID-19 Cases") + scale_x_date(date_breaks = "3 days") + stat_smooth(method='mavg', method_args={'window': 3}, color='cyan', show_legend=True) + stat_smooth(method='mavg', method_args={'window': 7}, color='blue') + theme(axis_text_x=element_text(rotation=45, hjust=1))
-        p1.save(filename=('cases_daily_' + str(date_today)),path=path_to_graphs,height=5, width=20, units = 'in', dpi=1000, verbose = False)
+        p1.save(filename=('cases_daily_' + str(date_today)),path=path_to_graphs,height=10, width=20, units = 'in', dpi=1000, verbose = False)
     except Exception:
         spinner.fail("✘")
+        error_count += 1
     else:
         spinner.ok("✔")
 
 with yaspin(text=" Creating and saving the daily change in deaths plot... ", color="yellow") as spinner:
     try:
         p2 = ggplot(deaths, aes(x="Reporting date", y="Daily change in deaths", group = 1)) + geom_point() + geom_line() + labs(title = "Daily Change in Deaths") + scale_x_date(date_breaks = "3 days") + stat_smooth(method='mavg', method_args={'window': 3}, color='cyan') + stat_smooth(method='mavg', method_args={'window': 7}, color='blue') + theme(axis_text_x=element_text(rotation=45, hjust=1))
-        p2.save(filename = ('deaths_change_daily_' + str(date_today)),path=path_to_graphs,height=5, width=20, units = 'in', dpi=1000, verbose = False)
+        p2.save(filename = ('deaths_change_daily_' + str(date_today)),path=path_to_graphs,height=10, width=20, units = 'in', dpi=1000, verbose = False)
     except Exception:
         spinner.fail("✘")
+        error_count += 1
     else:
         spinner.ok("✔")
 with yaspin(text=" Creating and saving the cumulative cases plot...", color="yellow") as spinner:
     try:
         p3 = ggplot(cases, aes(x="Specimen date", y="Cumulative lab-confirmed cases", group = 1)) + geom_point() + geom_line() + labs(title = "Cumulative Cases") + scale_x_date(date_breaks = "3 days") + theme(axis_text_x=element_text(rotation=45, hjust=1))
-        p3.save(filename = ('cumulative_cases_' + str(date_today)),path=path_to_graphs,height=5, width=20, units = 'in', dpi=1000, verbose = False)
+        p3.save(filename = ('cumulative_cases_' + str(date_today)),path=path_to_graphs,height=10, width=20, units = 'in', dpi=1000, verbose = False)
     except Exception:
         spinner.fail("✘")
+        error_count += 1
     else:
         spinner.ok("✔")
 with yaspin(text=" Creating and saving the cumulative deaths plot...", color="yellow") as spinner:
     try:
         p4 = ggplot(deaths, aes(x="Reporting date", y="Cumulative deaths", group = 1)) + geom_point() + geom_line() + labs(title = "Cumulative Deaths") + scale_x_date(date_breaks = "3 days") + theme(axis_text_x=element_text(rotation=45, hjust=1))
-        p4.save(filename = ('cumulative_deaths_' + str(date_today)),path=path_to_graphs,height=5, width=20, units = 'in', dpi=1000, verbose = False)
+        p4.save(filename = ('cumulative_deaths_' + str(date_today)),path=path_to_graphs,height=10, width=20, units = 'in', dpi=1000, verbose = False)
     except Exception:
         spinner.fail("✘")
+        error_count += 1
     else:
         spinner.ok("✔")
+
+if error_count > 1:
+    print("⚠  {} errors were encountered during runtime. Check the logs...".format(error_count))
+else:
+    print("❤  Success. Thank you for your patience.")
