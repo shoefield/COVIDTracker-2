@@ -7,10 +7,12 @@ from datetime import datetime
 from plotnine import *
 from yaspin import yaspin
 import time
+import logging
 
 # VARIABLES AND INITIALISATION
 error_count = 0
 url_cases = 'https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv'
+f = open("covidtracker.log", "a")
 # url_deaths = 'https://coronavirus.data.gov.uk/downloads/csv/coronavirus-deaths_latest.csv'
 
 def getStats():
@@ -109,9 +111,13 @@ with yaspin(text=" Creating and saving the daily cases plot...", color="yellow")
     try:
         p1 = ggplot(cases, aes(x="Specimen date", y="Daily lab-confirmed cases", group = 1)) + geom_col() + labs(title = "Daily COVID-19 Cases") + scale_x_date(date_breaks = "3 days") + stat_smooth(method='mavg', method_args={'window': 3}, color='cyan', show_legend=True) + stat_smooth(method='mavg', method_args={'window': 7}, color='blue') + theme(axis_text_x=element_text(rotation=45, hjust=1))
         p1.save(filename=('cases_daily_' + str(date_today)),path=path_to_graphs,height=6, width=20, units = 'in', dpi=1000, verbose = False)
-    except Exception:
+    except Exception as e:
         spinner.fail("✘")
         error_count += 1
+        #f = open("covidtracker.log", "a")
+        #f.write(str(Argument))
+        #f.close()
+        print(e)
     else:
         spinner.ok("✔")
 
@@ -131,9 +137,13 @@ with yaspin(text=" Creating and saving the cumulative cases plot...", color="yel
     try:
         p3 = ggplot(cases, aes(x="Specimen date", y="Cumulative lab-confirmed cases", group = 1)) + geom_point() + geom_line() + labs(title = "Cumulative Cases") + scale_x_date(date_breaks = "3 days") + theme(axis_text_x=element_text(rotation=45, hjust=1))
         p3.save(filename = ('cumulative_cases_' + str(date_today)),path=path_to_graphs,height=6, width=20, units = 'in', dpi=1000, verbose = False)
-    except Exception:
+    except Exception as e:
         spinner.fail("✘")
         error_count += 1
+        #f = open("covidtracker.log", "a")
+        #f.write(str(Argument))
+        #f.close()
+        print(e)
     else:
         spinner.ok("✔")
 
